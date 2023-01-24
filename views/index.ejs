@@ -9,6 +9,8 @@
 <body>
 
   <h1>Smart Home Monitoring</h1>
+  <button onclick="location.reload()">Reload</button>
+
   <!-- <p>
     <%= JSON.stringify(xy1data[0]) %>
   </p> -->
@@ -60,24 +62,31 @@
           borderColor: 'rgba(255, 99, 132, 1)',
           borderWidth: 1
         },
-        // {
-        //   label: '모듈 2',
-        //   data: [<%= y1data[1] %>],
-        //   backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        //   borderColor: 'rgba(54, 162, 235, 1)',
-        //   borderWidth: 2
-        // }
+        {
+          label: '외부 온도',
+          data: [<%= y3data[0] %>],
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 2
+        }
       ]
 
       },
       options: {
         scales: {
-          x: {
-            type: 'timeseries'
-          },
-          y: {
-            beginAtZero: true
-          }
+            xAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Time(yyyymmddhhmmss)'
+                }
+            }],
+            yAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: '온도 (C)'
+                }
+            }]
+          
         }
       }
     });
@@ -97,12 +106,18 @@
       },
       options: {
         scales: {
-          x: {
-            type: 'timeseries'
-          },
-          y: {
-            beginAtZero: true
-          }
+            xAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Time(yyyymmddhhmmss)'
+                }
+            }],
+            yAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: '습도 (%)'
+                }
+            }]
         }
       }
     });

@@ -3,6 +3,10 @@ var cors = require('cors')
 const app = express()
 const port = 3000
 const Chart = require('chart.js')
+const fs = require('fs');
+
+
+
 // const { each } = require('chart.js/dist/helpers/helpers.core')
 
 app.use(cors())
@@ -21,18 +25,26 @@ let dataArray = []//전체 데이터 모음
 let maxSize = 3000 //set the max array size
 let sensors = []
 let eachSensorArr = []
-var chartData = {}
+// if(fs.existsSync('dataLog.txt')){
+//     eachSensorArr = fs.readFile('dataLog.txt', 'utf8', (err, data) => {
+//         if (err) throw err;
+//         console.log(data);
+//       });
+// }
+
 var xtime = []
 var yhumid = []
+let yOtemp = []
+let yOhumid = []
 var ytemp = []//declare global variables
 let xyhumid = []
 let xytemp = []
-
+const startTime = new Date()
 app.get('/dataTr/:name', (req, res) => {
     // const q = req.query //localhost:3000/dataTr/ab?id=Jason&sensor=room1&temp=27.5&humid=25
     const curr = new Date()
-    const utc = curr.getTime() + curr.getTimezoneOffset()*60*1000
-    const KR_TIME_DIFF = 9*60*60*1000
+    const utc = curr.getTime() + curr.getTimezoneOffset() * 60 * 1000
+    const KR_TIME_DIFF = 9 * 60 * 60 * 1000
     const date = new Date(utc + KR_TIME_DIFF)
     let options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
     let senseTime = date.toLocaleString('ko', options)
@@ -67,7 +79,7 @@ app.get('/dataTr/:name', (req, res) => {
         // sensors = [...new Set(sensors)]//중복되지 않은 값만 추출, 센서모듈 명칭만 배열로 만듦
         if (!sensors.includes(data['sensor'])) { //sensor값이 sensors에 있는지 확인
             sensors = [...sensors, data['sensor']]//없으면 append
-            let sensorNumber = sensors.length-1
+            let sensorNumber = sensors.length - 1
             //추가되는 아이템을 위한 배열 초기화, 초기화 해야 push에서 에러 없어짐
             eachSensorArr[sensorNumber] = []
             xtime[sensorNumber] = []
@@ -75,14 +87,12 @@ app.get('/dataTr/:name', (req, res) => {
             ytemp[sensorNumber] = []
             xyhumid[sensorNumber] = []
             xytemp[sensorNumber] = []
+            yOtemp[sensorNumber] = []
+            yOhumid[sensorNumber] = []
 
         }
         console.log(`sensors: ${sensors}`)
 
-        // let eachSensorArr = [] //초기화, 센서모듈별2차원배열 1행: 센서모듈1의 객체배열, 2행: 센서모듈2의 객체배열...
-        // xtime = []
-        // yhumid = []
-        // ytemp = []
         for (let i in sensors) {
             let sensorName = sensors[i]
             console.log(`for ${i}th sensor: ${sensorName}`)
@@ -94,16 +104,20 @@ app.get('/dataTr/:name', (req, res) => {
                 // console.log(eachSensorArr)
                 eachSensorArr[i].push(data)
                 let items = Object.keys(data)
+
                 for (let item of items) {//수정필요
                     console.log(`items: ${item}`)
                 }
+
                 console.log('data[time')
                 console.log(data['time'])
                 console.log('xtime')
                 console.log(xtime)
                 xtime[i].push(data['time'])//객체에서 time의 value만 array에 추가
                 ytemp[i].push(data['temp'])
+                yOtemp[i].push(data['tempOut'])
                 yhumid[i].push(data['humid'])
+                yOhumid[i].push(data['humidOut'])
                 xytemp[i].push({ 'x': data['time'], 'y': data['temp'] })
                 xyhumid[i].push({ 'x': data['time'], 'y': data['humid'] })
             }
@@ -113,67 +127,28 @@ app.get('/dataTr/:name', (req, res) => {
             // yhumid.push(eachSensor.map(obj => obj.humid))
         }
 
-        // user = dataArray.map(obj => obj.id)
-        // sensor = dataArray.map(obj => obj.sensor)
-        //convert two arrays into an array of objects
-        // let xytemp = xtime.map((item, index) =>
-        //     Object.assign({}, { x: item }, { y: ytemp[index] }));
 
-        // let xyhumid = xtime.map((item, index) =>
-        //     Object.assign({}, { x: item }, { y: yhumid[index] }));
-        console.log('eachSensorArr:')
-        console.log(eachSensorArr);
-        console.log(`xtime: `)
-        console.log(xtime)
-        console.log(`ytemp: `)
-        console.log(ytemp)
-        console.log(`yhumid: `)
-        console.log(yhumid)
-
-        // xytemp = []
-        // xyhumid = []
-        // let imax = xtime.length
-        // console.log(`imax:${imax}`)
-        // for (let i = 0; i < imax; i++) {
-        //     if (imax > 1) {
-        //         console.log(`i:${i}`)
-        //         let jmax = xtime[i].length
-        //         console.log(`jmax: ${jmax}`)
-        //         for (let j = 0; j < jmax; j++) {
-        //             xytemp[i][j] = xytemp.push({ 'x': xtime[i][j], 'y': ytemp[i][j] })
-        //             xyhumid[i][j] = xyhumid.push({ 'x': xtime[i][j], 'y': yhumid[i][j] })
-        //         }
-        //     } else if (imax == 1) {
-        //         let jmax = xtime[0].length
-        //         console.log(`jmax: ${jmax}`)
-        //         // xytemp = new Array(jmax)
-        //         // xyhumid = new Array(jmax)
-        //         for (let j = 0; j < jmax; j++) {
-        //             console.log(`i==0, j=${j}`)
-        //             console.log(`xtime: ${xtime[i[j]]}`)
-        //             xytemp[0] = xytemp.push({ 'x': xtime[i][j], 'y': ytemp[i][j] })
-        //             xyhumid[0] = xyhumid.push({ 'x': xtime[i][j], 'y': yhumid[i][j] })
-        //         }
-        //     }
-
-        // }
-        console.log('xydata:')
-        // JSON.stringify(xytemp)
-        // JSON.stringify(xyhumid)
-        console.log(xytemp)
-        console.log(xyhumid)
+        // console.log('xydata:')
+        // console.log(xytemp)
+        // console.log(xyhumid)
 
     }
+
+    fs.writeFile(`dataLog_${startTime}.txt`, JSON.stringify(eachSensorArr), (err) => {
+        if (err) throw err;
+        console.log('File saved successfully!');
+    });
     // module.exports = chartData,xtime,yhumid,ytemp
 })
 
 app.get('/chart', (req, res) => {
     const myVariable = 'Hello World';
     // res.sendFile(__dirname + '/chart.html');
-    res.render('index', { 
-        xdata: xtime, y1data: ytemp, y2data: yhumid, 
-        xy1data: xytemp, xy2data: xyhumid, 
-        sensor0: sensors[0], sensor1: sensors[1] })
+    res.render('index', {
+        xdata: xtime, y1data: ytemp, y2data: yhumid,y3data: yOtemp, y4data: yOhumid,
+        xy1data: xytemp, xy2data: xyhumid,
+        sensor0: sensors[0], sensor1: sensors[1]
+    })
     // module.exports = chartData
 });
 
