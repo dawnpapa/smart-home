@@ -30,7 +30,10 @@ let xytemp = []
 
 app.get('/dataTr/:name', (req, res) => {
     // const q = req.query //localhost:3000/dataTr/ab?id=Jason&sensor=room1&temp=27.5&humid=25
-    let date = new Date()
+    const curr = new Date()
+    const utc = curr.getTime() + curr.getTimezoneOffset()*60*1000
+    const KR_TIME_DIFF = 9*60*60*1000
+    const date = new Date(utc + KR_TIME_DIFF)
     let options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
     let senseTime = date.toLocaleString('ko', options)
     senseTime = +senseTime.replace(/[^0-9]/g, "")//+convert string to number,202301231305yyyymmddhhmmss
