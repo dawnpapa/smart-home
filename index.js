@@ -18,7 +18,7 @@ app.engine('html', require('ejs').renderFile)
 //query
 let dataArray = []//전체 데이터 모음
 // let eachSensorArr = []//센서별 데이터 모듬, 2차원 배열
-let maxSize = 1000 //set the max array size
+let maxSize = 3000 //set the max array size
 let sensors = []
 let eachSensorArr = []
 var chartData = {}
@@ -167,7 +167,10 @@ app.get('/dataTr/:name', (req, res) => {
 app.get('/chart', (req, res) => {
     const myVariable = 'Hello World';
     // res.sendFile(__dirname + '/chart.html');
-    res.render('index', { xdata: xtime, y1data: ytemp, y2data: yhumid, xy1data: xytemp, xy2data: xyhumid })
+    res.render('index', { 
+        xdata: xtime, y1data: ytemp, y2data: yhumid, 
+        xy1data: xytemp, xy2data: xyhumid, 
+        sensor0: sensors[0], sensor1: sensors[1] })
     // module.exports = chartData
 });
 
