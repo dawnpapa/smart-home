@@ -10,7 +10,7 @@
 
   <h1>Smart Home Monitoring</h1>
   <button onclick="location.reload()">Reload</button>
-  <p><%= JSON.stringify(sensor1) %></p>
+  
   <!-- <p>
     <%= JSON.stringify(xy1data[0]) %>
   </p> -->
@@ -18,9 +18,12 @@
     <%= y1data[0] %>
   </p> -->
   <div style="position: relative;">
+    <p><%= sensor0 %></p>
     <canvas id="chart1"></canvas>
     <canvas id="chart2"></canvas>
+    <p><%= sensor1 %></p>
     <canvas id="chart3"></canvas>
+    <canvas id="chart4"></canvas>
   </div>
   <!-- <canvas id="Temperature"></canvas> -->
   <script>
@@ -77,14 +80,15 @@
           backgroundColor: 'rgba(54, 162, 235, 0.2)',
           borderColor: 'rgba(54, 162, 235, 1)',
           borderWidth: 1
-        },
-        {
-          label: '방1 습도',//[<%= JSON.stringify(sensor1) %>],
-          data: [<%= y2data[1] %>],
-          backgroundColor: 'rgba(255, 99, 132, 0.2)',
-          borderColor: 'rgba(255, 99, 132, 1)',
-          borderWidth: 1
         }
+        // },
+        // {
+        //   label: '방1 습도',//[<%= JSON.stringify(sensor1) %>],
+        //   data: [<%= y2data[1] %>],
+        //   backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        //   borderColor: 'rgba(255, 99, 132, 1)',
+        //   borderWidth: 1
+        // }
       ]
       },
       options: {
@@ -144,7 +148,37 @@
         }
       }
     });
-
+    var ctx4 = document.getElementById('chart4').getContext('2d');
+    var chart4 = new Chart(ctx4, {
+      type: 'line',
+      data: {
+        labels: [<%= xdata[1] %>],
+        datasets: [{
+          label: '드레스룸 습도',
+          data: [<%= y2data[1] %>],
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1
+        }
+      ]
+      },
+      options: {
+        scales: {
+          xAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: 'Time(yyyymmddhhmmss)'
+            }
+          }],
+          yAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: '습도 (%)'
+            }
+          }]
+        }
+      }
+    });
 //     Chart.plugins.register({
 //     beforeDraw: function(chart) {
 //         var ctx = chart.chart.ctx;
